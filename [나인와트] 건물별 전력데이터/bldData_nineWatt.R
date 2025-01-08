@@ -3,7 +3,13 @@ library(dplyr)
 ## 지번별 전력사용량 데이터 (세움터 2020년 1월~12월)
 
 
-rawData <- read.csv("C:/Users/Jeon/Desktop/allData/platform/나인와트/안양시sample/mtr_[별도건축물_전체_양식]지역추출-sigungu_cd_41171-Matched_2020_mtr.csv", header = T, sep = "|")
+rawData <- read.csv("C:/Users/Desktop/Desktop/allData/platform/나인와트/안양시sample/mtr_[별도건축물_전체_양식]지역추출-sigungu_cd_41171-Matched_2020_mtr.csv", header = T, sep = "|")
+
+rawData_A <- rawData %>% slice(1:1000000)
+rawData_B <- rawData %>% slice(1000001:2000000)
+rawData_C <- rawData %>% slice(2000001:nrow(rawData))
+
+
 
 unique(rawData$ENGY_SPLY_KIK_CD)
 rawData_elec <- rawData %>%
@@ -27,7 +33,7 @@ rawData_GG <- rawData %>%
 
 
 
-######## 세움터 2020년 06월 ########
+######## 세움터 2020년 월 ########
 months <- c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
 
 rawData_SUT_2020 <- c()
