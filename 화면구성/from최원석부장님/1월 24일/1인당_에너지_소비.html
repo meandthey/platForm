@@ -1,0 +1,204 @@
+<!--
+	THIS EXAMPLE WAS DOWNLOADED FROM https://echarts.apache.org/examples/en/editor.html?c=pictorialBar-velocity
+-->
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+  
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.6.0/dist/extension/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-stat@latest/dist/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-graph-modularity extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-graph-modularity@2/dist/echarts-graph-modularity.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+  -->
+  <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.6.0/dist/extension/bmap.min.js"></script>
+  -->
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    const pathSymbols = {
+  human:
+    'path://M29.902,23.275c1.86,0,3.368-1.506,3.368-3.365c0-1.859-1.508-3.365-3.368-3.365 c-1.857,0-3.365,1.506-3.365,3.365C26.537,21.769,28.045,23.275,29.902,23.275z M36.867,30.74c-1.666-0.467-3.799-1.6-4.732-4.199 c-0.932-2.6-3.131-2.998-4.797-2.998s-7.098,3.894-7.098,3.894c-1.133,1.001-2.1,6.502-0.967,6.769 c1.133,0.269,1.266-1.533,1.934-3.599c0.666-2.065,3.797-3.466,3.797-3.466s0.201,2.467-0.398,3.866 c-0.599,1.399-1.133,2.866-1.467,6.198s-1.6,3.665-3.799,6.266c-2.199,2.598-0.6,3.797,0.398,3.664 c1.002-0.133,5.865-5.598,6.398-6.998c0.533-1.397,0.668-3.732,0.668-3.732s0,0,2.199,1.867c2.199,1.865,2.332,4.6,2.998,7.73 s2.332,0.934,2.332-0.467c0-1.401,0.269-5.465-1-7.064c-1.265-1.6-3.73-3.465-3.73-5.265s1.199-3.732,1.199-3.732 c0.332,1.667,3.335,3.065,5.599,3.399C38.668,33.206,38.533,31.207,36.867,30.74z'
+};
+option = {
+  title: {
+    show: true,
+    text: '지역별 1인당 에너지 소비(toe/인)'
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'none'
+    },
+    formatter: function (params) {
+      return params[0].name + ': ' + params[0].value;
+    }
+  },
+  xAxis: {
+    data: ['울산','전남','충남','경북','충북','강원','인천','전북','경남','경기','제주','세종','대구','부산','대전','광주','서울'],
+    axisTick: { show: false },
+    axisLine: { show: false },
+    axisLabel: {
+      color: '#e54035'
+    }
+  },
+  yAxis: {
+    splitLine: { show: false },
+    axisTick: { show: false },
+    axisLine: { show: false },
+    axisLabel: { show: false }
+  },
+  color: ['#e54035'],
+  series: [
+    {
+      name: 'hill',
+      type: 'pictorialBar',
+      barCategoryGap: '-130%',
+      // symbol: 'path://M0,10 L10,10 L5,0 L0,10 z',
+      symbol: 'path://M0,10 L10,10 C5.5,10 5.5,5 5,0 C4.5,5 4.5,10 0,10 z',
+      itemStyle: {
+        opacity: 0.5
+      },
+      emphasis: {
+        itemStyle: {
+          opacity: 1
+        }
+      },
+      data: [26.976,24.295,18.131,7.578,4.525,4.004,3.599,3.358,2.652,2.35,2.326,1.955,1.924,1.825,1.794,1.692,1.405],
+      z: 10
+    },
+    {
+      name: 'glyph',
+      type: 'pictorialBar',
+      barGap: '-100%',
+      symbolPosition: 'end',
+      symbolSize: 50,
+      symbolOffset: [0, '-130%'],
+      data: [
+        {
+          value: 26.976,
+          symbol: pathSymbols.human,
+          symbolSize: [35, 50]
+        },
+        {
+          value: 24.295,
+          symbol: pathSymbols.human,
+          symbolSize: [32, 48]
+        },
+        {
+          value: 18.131,
+          symbol: pathSymbols.human,
+          symbolSize: [30, 40]
+        },
+        {
+          value: 7.578,
+          symbol: pathSymbols.human,
+          symbolSize: [20, 30]
+        },
+        {
+          value: 4.525,
+          symbol: pathSymbols.human,
+          symbolSize: [15, 25]
+        },
+        {
+          value: 4.004,
+          symbol: pathSymbols.human,
+          symbolSize: [15, 25]
+        },
+        {
+          value: 3.599,
+          symbol: pathSymbols.human,
+          symbolSize: [15, 25]
+        },
+        {
+          value: 3.358,
+          symbol: pathSymbols.human,
+          symbolSize: [15, 25]
+        },
+        {
+          value: 2.652,
+          symbol: pathSymbols.human,
+          symbolSize: [14, 23]
+        },
+        {
+          value: 2.35,
+          symbol: pathSymbols.human,
+          symbolSize: [13, 22],
+          itemStyle: {
+            color: '#00f'
+          }
+        },
+        {
+          value: 2.326,
+          symbol: pathSymbols.human,
+          symbolSize: [13, 22]
+        },
+        {
+          value: 1.955,
+          symbol: pathSymbols.human,
+          symbolSize: [12, 21]
+        },
+        {
+          value: 1.924,
+          symbol: pathSymbols.human,
+          symbolSize: [12, 21]
+        },
+        {
+          value: 1.825,
+          symbol: pathSymbols.human,
+          symbolSize: [12, 21]
+        },
+        {
+          value: 1.794,
+          symbol: pathSymbols.human,
+          symbolSize: [11, 20]
+        },
+        {
+          value: 1.692,
+          symbol: pathSymbols.human,
+          symbolSize: [11, 20]
+        },
+        {
+          value: 1.405,
+          symbol: pathSymbols.human,
+          symbolSize: [12, 20]
+        }
+      ]
+    }
+  ]
+};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>

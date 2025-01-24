@@ -1,0 +1,203 @@
+<!--
+	THIS EXAMPLE WAS DOWNLOADED FROM https://echarts.apache.org/examples/en/editor.html?c=pictorialBar-velocity
+-->
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+  
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.6.0/dist/extension/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-stat@latest/dist/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-graph-modularity extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-graph-modularity@2/dist/echarts-graph-modularity.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+  -->
+  <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.6.0/dist/extension/bmap.min.js"></script>
+  -->
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    const pathSymbols = {
+  car: 'path://M21.535,86.5a23.562,23.562,0,0,1-11.81-3.066,20.731,20.731,0,0,1-7.777-7.868A19.493,19.493,0,0,1-.492,65.6a21.224,21.224,0,0,1,3.383-10.78l14.758-20.56A22.693,22.693,0,0,1,19.683,31.5H19a2,2,0,0,1,0-4h.567L10.761,15.577A2,2,0,0,1,12.446,12.5H60.14a2,2,0,0,1,1.685,3.078L53.018,27.5H54a2,2,0,1,1,0,4H52.9a22.729,22.729,0,0,1,2.034,2.761L69.7,54.821A21.218,21.218,0,0,1,73.08,65.6a19.507,19.507,0,0,1-2.441,9.964,20.727,20.727,0,0,1-7.777,7.869A23.565,23.565,0,0,1,51.052,86.5ZM12.029,59.681a6.937,6.937,0,0,0-2.723,2.766,8.791,8.791,0,0,0-1,4.3,9,9,0,0,0,.95,4.232,6.693,6.693,0,0,0,2.669,2.772,7.983,7.983,0,0,0,3.964.967,7.863,7.863,0,0,0,3.61-.805,5.919,5.919,0,0,0,2.465-2.326,7.039,7.039,0,0,0,.886-3.594V65.863H16.014v2.922h2.879a2.186,2.186,0,0,1-.779,1.724,3.391,3.391,0,0,1-2.186.639,3.027,3.027,0,0,1-2.541-1.171,5.373,5.373,0,0,1-.876-3.276,6.251,6.251,0,0,1,.409-2.374A3.283,3.283,0,0,1,14.1,62.817,3.246,3.246,0,0,1,15.95,62.3a2.927,2.927,0,0,1,1.692.463,2.184,2.184,0,0,1,.886,1.3h4.147a5.487,5.487,0,0,0-1.1-2.75,6.249,6.249,0,0,0-2.417-1.9,7.868,7.868,0,0,0-3.3-.682A7.833,7.833,0,0,0,12.029,59.681ZM53.1,74.5h4.082V69.816h2.407a6.94,6.94,0,0,0,3.093-.655,4.813,4.813,0,0,0,2.063-1.885,5.543,5.543,0,0,0,.73-2.874,5.628,5.628,0,0,0-.714-2.857,4.926,4.926,0,0,0-2.02-1.918,6.467,6.467,0,0,0-3.024-.682H53.1Zm-15.09,0h5.909a8.619,8.619,0,0,0,4.109-.934,6.439,6.439,0,0,0,2.686-2.686,9.653,9.653,0,0,0-.005-8.32,6.434,6.434,0,0,0-2.7-2.686,8.739,8.739,0,0,0-4.136-.93H38.01Zm-9.589-5.178h1.6L32.781,74.5h4.447l-3.18-5.833a4.489,4.489,0,0,0,1.971-1.734,5.142,5.142,0,0,0,.693-2.723A5.393,5.393,0,0,0,36,61.4a4.666,4.666,0,0,0-2.013-1.821,6.905,6.905,0,0,0-3.035-.634H24.337V74.5h4.082V69.322Zm6.955-29.084h1.893l1.409,6.192h2.879l1.46-6.192h2.169V38.345H43.471l1.459-6.192H42.208l-1.272,6.192H39.014l-1.42-6.192H35.05l-1.42,6.192H31.718l-1.282-6.192H27.715l1.459,6.192H27.458v1.893h2.169l1.46,6.192h2.879l1.409-6.191h0Zm6.716,30.782V62.426H43.66a5.1,5.1,0,0,1,2.154.4,2.653,2.653,0,0,1,1.279,1.343,7.751,7.751,0,0,1,.005,5.1,2.663,2.663,0,0,1-1.257,1.348,4.739,4.739,0,0,1-2.073.4Zm15.09-4.383V62.211h1.59a2.641,2.641,0,0,1,1.794.59,2.022,2.022,0,0,1,.634,1.6,2.083,2.083,0,0,1-.634,1.627,2.587,2.587,0,0,1-1.794.607ZM28.419,66.12v-3.91h1.589a2.955,2.955,0,0,1,1.81.5,2.107,2.107,0,0,1,.155,2.81,2.7,2.7,0,0,1-1.965.6Zm11.66-23.635h-.118l-.513-2.248h1.094l-.463,2.248Zm-7.394-.02h-.119L32.1,40.237H33.2l-.511,2.228Zm4.15-4.121H35.809l.464-2.051h.1l.464,2.05h0Z'
+};
+option = {
+  title: {
+    show: true,
+    text: '지역별 GRDP⁴당 에너지 소비(toe/백만원)'
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'none'
+    },
+    formatter: function (params) {
+      return params[0].name + ': ' + params[0].value;
+    }
+  },
+  xAxis: {
+    data: ['전남','울산','충남','경북','강원','전북','인천','충북','제주','대구','경남','부산','경기','광주','대전','세종','서울'],
+    axisTick: { show: false },
+    axisLine: { show: false },
+    axisLabel: {
+      color: '#239058'
+    }
+  },
+  yAxis: {
+    splitLine: { show: false },
+    axisTick: { show: false },
+    axisLine: { show: false },
+    axisLabel: { show: false }
+  },
+  color: ['#239058'],
+  series: [
+    {
+      name: 'hill',
+      type: 'pictorialBar',
+      barCategoryGap: '-130%',
+      // symbol: 'path://M0,10 L10,10 L5,0 L0,10 z',
+      symbol: 'path://M0,10 L10,10 C5.5,10 5.5,5 5,0 C4.5,5 4.5,10 0,10 z',
+      itemStyle: {
+        opacity: 0.5
+      },
+      emphasis: {
+        itemStyle: {
+          opacity: 1
+        }
+      },
+      data: [0.569,0.434,0.326,0.186,0.127,0.116,0.111,0.1,0.083,0.08,0.079,0.067,0.062,0.059,0.059,0.058,0.03],
+      z: 10
+    },
+    {
+      name: 'glyph',
+      type: 'pictorialBar',
+      barGap: '-100%',
+      symbolPosition: 'end',
+      symbolSize: 50,
+      symbolOffset: [0, '-120%'],
+      data: [
+        {
+          value: 0.569,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.434,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.326,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.186,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.127,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.116,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.111,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.1,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.083,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.08,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.079,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.067,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.062,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30],
+          itemStyle: {
+            color: '#00f'
+          }
+        },
+        {
+          value: 0.059,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.059,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.058,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        },
+        {
+          value: 0.03,
+          symbol: pathSymbols.car,
+          symbolSize: [40, 30]
+        }
+      ]
+    }
+  ]
+};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>
