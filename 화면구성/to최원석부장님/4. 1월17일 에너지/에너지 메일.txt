@@ -1,26 +1,23 @@
+- Bus 문제
+- Total 그대로?
 
-본 논문에서 다루고 있는 큰 주제가 BEV의 공간적 분포이다. BEV의 공간적 분포는 BEV 충전소의 공간적 분포와 장기적으로 일치한다. He et al (2019)는 
-전기차 보급을 위해 충전인프라가 충분히 갖춰지는 것이 선행되어야 하는데, 이러한 충전인프라 구축을 계획하는 방법 들을 소개하는 것,
-He et al (2019) : 미국 사례로서, 장거리 여행의 비중을 최대화 할 수 있는 조건 하에서의 충전인프라 위치 계획을 연구.
-Xie and Lin (2021) : 미국 사례로서, 장거리 여행자들의 불편 비용을 감안하여 충전인프라 위치 계획을 연구.
-Speth et al (2022) : 독일 사례로서, 트럭 전기차의 대기시간을 고려한 충전인프라 위치 계획을 연구.
-[44]
-Jocehm and Szimba (2019) [45]
-
-
-[14] F. Ahmad, A. Iqbal, I. Ashraf, M. Marzband, I. khan, Optimal location of 
-electric vehicle charging station and its impact on distribution network: A 
-review, Energy Reports 8 (2022) 2314–2333. 
-https://doi.org/10.1016/j.egyr.2022.01.180.
+Crozier et al. (2020)
+Powell et al. (2022)
+Unterluggauer et al. (2023) : A conditional probability based method
+>> BEV's impacts on T&D systems
 
 
-[15] M.O. Metais, O. Jouini, Y. Perez, J. Berrada, E. Suomalainen, Too much or 
-not enough? Planning electric vehicle charging infrastructure: A review of 
-modeling options, Renewable and Sustainable Energy Reviews 153 (2022). 
-https://doi.org/10.1016/j.rser.2021.111719.
+Cao et al. (2022): Moran
+>> EV 제조업체와 EV 수요자와의 공간적 패턴 상관을 GIni로 계싼
 
 
-[16] T. Unterluggauer, J. Rich, P.B. Andersen, S. Hashemi, Electric vehicle 
-charging infrastructure planning for integrated transportation and power 
-distribution networks: A review, ETransportation 12 (2022). 
-https://doi.org/10.1016/j.etran.2022.100163.
+Heymann et al. (2019): deterministic simulation
+>> The correlation between the spatial patterns of EV and PV adoption.  
+>> spatiotemporal technology adoption model that can predict adoption behavior of residential electric vehicle (EV) chargers and photovoltaic (PV) modules
+
+
+Assessing asymmetry of technology adoption patterns
+
+조금 더 명확한 설명을 위해, 아래의 가설 하에서는 지니계수의 감소를 예상할 수 있다.
+1. 기후변화 대응을 위해 i) 전기차 보급과 ii) 분산형 전원 (i.e. PV) 보급이 늘어날 예정이다.
+2. 미래 인구의 공간적 분포가 주어지면, 전기차 보급의 공간적 분포는 탄소중립 달성을 하든(NZ), 탄소중립 달성을 안하든 (Ref) 상관없이 똑같다.
