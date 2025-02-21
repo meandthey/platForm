@@ -10,31 +10,23 @@ KTOE_to_GWh <- 11.63
 KTOE_to_MWh <- KTOE_to_GWh * thous
 
 # year / SIDO / SGG / con / gen
+SIDO_list <- c('서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주')
+
 
 rawData_SGG_gen <- read.csv('C:/Users/DESKTOP/Desktop/allData/KEPCO/한국전력통계/outputData/finalData_wReGen.csv', header = T, fileEncoding = "EUC-KR")
 
 SGG_gen <- rawData_SGG_gen %>%
+  filter(year %in% c(2019, 2020, 2021, 2022)) %>%
+  filter(시도 != "-" ) %>%
   group_by(year, 시도, 시군구) %>% summarize(발전량_MWh = sum(발전량_MWh)) %>% ungroup() %>%
   rename(SIDO = 시도,
          SGG = 시군구)
 
-SGG_gen %>%
-  filter(year == 2022) %>%
-  mutate(sum = sum(발전량_MWh)) %>%
-  pull(sum)
 
+# SGG_gen %>%
+#   group_by(year) %>% summarize(
+#                                발전량_MWh = sum(발전량_MWh))
 
-SGG_gen %>%
-  filter(year == 2022) %>%
-  filter(SIDO == "-") %>%
-  mutate(sum = sum(발전량_MWh)/10^(6)) %>%
-  pull(sum)
-
-
-SGG_gen_SGGlist <- unique(paste0(SGG_gen$SIDO, SGG_gen$SGG))
-
-SGG_gen %>%
-  filter(SGG == 'NANA')
 
 
 
@@ -44,20 +36,48 @@ SGG_con <- rawData_SGG_enCon %>%
   filter(energyType == 'Electricity') %>%
   mutate(소비량_MWh = value * KTOE_to_MWh,
          unit = 'MWh') %>%
-  group_by(year, SIDO, SGG) %>% summarize(소비량_MWh = sum(소비량_MWh))
+  group_by(year, SIDO, SGG) %>% summarize(소비량_MWh = sum(소비량_MWh)) %>% ungroup()
 
-SGG_con_SGGlist <- unique(paste0(SGG_con$SIDO, SGG_con$SGG))
-
-
-
-SGG_gen_SGGlist[!SGG_gen_SGGlist %in% SGG_con_SGGlist]
+SGG_con_gen <- SGG_gen %>%
+  left_join(SGG_con, by = c('year', 'SIDO', 'SGG'))
 
 
-bb <- SGG_con %>%
-  left_join(SGG_gen, by = c('year', 'SIDO', 'SGG'))
+## 전력자립도 계산 ##
+#### KEEI 지역에너지통계연보에 "I-1" Sheet에 있는 전력자립도는 'V-1'의 지역별 발전량과 'V-4'의 지역별 전력소비량으로 계산한 퍼센트.
+SIDO_selfSuff <- SGG_con_gen %>%
+  group_by(year, SIDO) %>% summarize(발전량_MWh = sum(발전량_MWh),
+                                     소비량_MWh = sum(소비량_MWh)) %>% ungroup() %>%
+  mutate(전자율 = 100 * 발전량_MWh / 소비량_MWh) %>%
+  mutate(SIDO = factor(SIDO, levels= SIDO_list)) %>%
+  arrange(factor(SIDO, levels = SIDO_list)) %>%
+  arrange(desc(year))
 
-write.csv(bb, "bb.csv", fileEncoding = "EUC-KR", row.names = F)
-write.csv(aa, "aa.csv", fileEncoding = "EUC-KR", row.names = F)
+write.csv(SIDO_selfSuff, "SIDO_selfSuff.csv", fileEncoding = 'EUC-KR', row.names = F)
+         
+
+
+
+
+
+# SGG_con_gen_Total <- SGG_con_gen %>%
+#   group_by(year) %>% summarize(소비량_MWh = sum(소비량_MWh),
+#                                발전량_MWh = sum(발전량_MWh))
+
+
+
+
+# SGG_con_SGGlist <- unique(paste0(SGG_con$SIDO, SGG_con$SGG))
+# 
+# 
+# 
+# SGG_gen_SGGlist[!SGG_gen_SGGlist %in% SGG_con_SGGlist]
+# 
+# 
+# bb <- SGG_con %>%
+#   left_join(SGG_gen, by = c('year', 'SIDO', 'SGG'))
+# 
+# write.csv(bb, "bb.csv", fileEncoding = "EUC-KR", row.names = F)
+# write.csv(aa, "aa.csv", fileEncoding = "EUC-KR", row.names = F)
 
 
 
