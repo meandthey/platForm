@@ -7,6 +7,7 @@ library(readr)
 
 km2_to_m2 <- 10^(6)
 TWh_to_kWh <- 10^(9)
+kor_area <- 100210 #km2
 
 # 대한민국 영토 면적: 100,210 (km2)
 
@@ -18,6 +19,22 @@ rawData_irr_2012_to_2019 <- readr::read_csv(paste0(rawData_irr_filePath,'./한�
 
 irr_2012_to_2019 <- rawData_irr_2012_to_2019 %>%
   gather(-위도, -경도, key = YYYYMM, value = value) %>%
+  
+
+  
+  mutate(YYYY = case_when(
+    
+    grepl('2012', YYYYMM) ~ '2012', 
+    grepl('2013', YYYYMM) ~ '2013', 
+    grepl('2014', YYYYMM) ~ '2014', 
+    grepl('2015', YYYYMM) ~ '2015', 
+    grepl('2016', YYYYMM) ~ '2016', 
+    grepl('2017', YYYYMM) ~ '2017', 
+    grepl('2018', YYYYMM) ~ '2018', 
+    grepl('2019', YYYYMM) ~ '2019',
+    TRUE ~ 'else'
+    
+  )) %>%
   
   mutate(value_per_month = case_when(
     
@@ -36,44 +53,49 @@ irr_2012_to_2019 <- rawData_irr_2012_to_2019 %>%
     
   )) %>%
   
-  mutate(YYYY = case_when(
-    
-    grepl('2012', YYYYMM) ~ '2012', 
-    grepl('2013', YYYYMM) ~ '2013', 
-    grepl('2014', YYYYMM) ~ '2014', 
-    grepl('2015', YYYYMM) ~ '2015', 
-    grepl('2016', YYYYMM) ~ '2016', 
-    grepl('2017', YYYYMM) ~ '2017', 
-    grepl('2018', YYYYMM) ~ '2018', 
-    grepl('2019', YYYYMM) ~ '2019',
-    TRUE ~ 'else'
-    
-  )) %>%
   left_join(rawData_mapping_latlong_to_SGG, by = c('위도', '경도')) %>%
   drop_na() 
 
+## Area covered by a dot
+unique_Dots <- irr_2012_to_2019 %>%
+  distinct(위도, 경도, .keep_all = T)
 
+area_coveredByDot <- kor_area / nrow(unique_Dots) # km2
 
-  mutate(value_per_month_per1.46km2_ = value_per_month * 1.460064 * km2_to_m2)
+irr_2012_to_2019_full <- irr_2012_to_2019 %>%
+  mutate(value_per_month_per1.46km2_ = value_per_month * area_coveredByDot * km2_to_m2) %>%
+  mutate(YYYYMM =  gsub("\\(", "", YYYYMM)) %>%
+  mutate(YYYYMM =  gsub("\\)", "", YYYYMM)) %>%
+  mutate(YYYYMM = gsub(" kWh per m2 per day", "", YYYYMM)) %>%
+  select(-value) %>%
+  rename(value = value_per_month_per1.46km2_) %>%
+  select(위도, 경도, YYYYMM, YYYY, value, CTP_KOR_NM, SIG_KOR_NM)
   
 
 
-
-check_howManydots <- irr_2012_to_2019 %>%
-  filter(YYYY == 2019)
-
-nrow(check_howManydots) / 12
-
-area_coveredByDot <- 100210 / 68634 # km2
-
-
-irr_2012_to_2019_byNat_byYear <- irr_2012_to_2019 %>%
-  group_by(YYYY) %>% summarize(value = sum(value_per_month_per1.46km2_)) %>% ungroup() %>%
+## 잠재량 check
+#### National #### unit: TWh/year
+irr_2012_to_2019_byNat_byYear <- irr_2012_to_2019_full %>%
+  group_by(YYYY) %>% summarize(value = sum(value)) %>% ungroup() %>%
   mutate(value = value / TWh_to_kWh)
 
+#### Provincial #### unit: TWh/year
+irr_2012_to_2019_byPrv_byYear <- irr_2012_to_2019_full %>%
+  group_by(YYYY, CTP_KOR_NM) %>% summarize(value = sum(value / TWh_to_kWh)) %>% ungroup()
 
 
-13747 * 0.2
+#### SGG #### unit: TWh/year
+irr_2012_to_2019_bySGG_byYear <- irr_2012_to_2019_full %>%
+  group_by(YYYY, CTP_KOR_NM, SIG_KOR_NM) %>% summarize(value = sum(value / TWh_to_kWh)) %>% ungroup()
+
+irr_2012_to_2019_bySGG_byYear %>%
+  distinct(CTP_KOR_NM, SIG_KOR_NM)
+
+irr_2012_to_2019_full %>%
+  filter(YYYY==2019,
+         CTP_KOR_NM =='경기도')
+
+
 
 
 
