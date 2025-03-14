@@ -75,6 +75,7 @@ irr_2012_to_2019_full <- irr_2012_to_2019 %>%
 
 ## 잠재량 check
 #### National #### unit: TWh/year
+
 irr_2012_to_2019_byNat_byYear <- irr_2012_to_2019_full %>%
   group_by(YYYY) %>% summarize(value = sum(value)) %>% ungroup() %>%
   mutate(value = value / TWh_to_kWh)
