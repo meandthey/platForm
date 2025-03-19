@@ -6,100 +6,36 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Point
 import netCDF4
 
+## [일사량 데이터]
+# NetCDF 파일들이 저장된 폴더 경로 # 100m 격자의 일사량 데이터터
+rawData_irr_file_path = "C:/Users/DESKTOP/Desktop/allData/KMA/solarResource_GHI_byHours_byTotalPeriod/KMAPP_solar_FWS_total_mean.nc"
+rawData_irr = xr.open_dataset(rawData_irr_file_path)["SWDN_flat_with_shading"].to_dataframe().reset_index()
 
 
-
-# NetCDF 파일들이 저장된 폴더 경로
-file_path = "C:/Users/DESKTOP/Desktop/allData/KMA/solarResource_GHI_byHours_byTotalPeriod/KMAPP_solar_FWS_total_mean.nc"
-
-rawData = xr.open_dataset(file_path)
-final_df = rawData["SWDN_flat_with_shading"].to_dataframe().reset_index()
-#folder_path = "C:/Users/sidus/Desktop/solarResource_GHI_byMonth"
-# 1월~12월 NetCDF 파일 이름 리스트
-# file_names = [f"KMAPP_solar_FWS_{i:02d}M_mean.nc" for i in range(1, 13)]
-
-# # 최종 DataFrame 초기화
-# final_df = None
-
-# for month, file_name in enumerate(file_names, start=1):
-#     file_path = os.path.join(folder_path, file_name)
-
-#     #rawData = xr.open_dataset(file_path, engine="h5netcdf")
-#     rawData = xr.open_dataset(file_path)
-
-#     irrData = rawData["SWDN_flat_with_shading"].to_dataframe().reset_index()
-
-#     irrData.rename(columns={"SWDN_flat_with_shading": f"value_{month}"}, inplace=True)
-
-#     if final_df is None:
-#         final_df = irrData
-#     else:
-#         final_df = final_df.merge(irrData, on=["Y", "X"], how="left")
-
-# 최종 데이터 확인
-print(final_df.head())
-
-# CSV로 저장
-#final_df.to_csv("final_data.csv", index=False)
-
-
-
-# NetCDF 파일 열기
-#rawData_latlon_file_path = "C:/Users/sidus/Desktop/solarResource_GHI_byMonth/KMAP_latlon.nc"
-rawData_latlon_file_path = "C:/Users/DESKTOP/Desktop/allData/KMA/solarResource_GHI_byMonth/appendix/KMAP_latlon.nc"
-
-rawData_latlon = xr.open_dataset(rawData_latlon_file_path)
-
-# 데이터셋 구조 확인
-print(rawData_latlon)
-
-# 변수 목록 확인
-print(rawData_latlon.variables)
-
-# DataArray를 DataFrame으로 변환
-latData = rawData_latlon['latitude'].values.flatten()
-lonData = rawData_latlon['longitude'].values.flatten()
-
-# DataFrame 생성
-df_latlon = pd.DataFrame({"latitude": latData, "longitude": lonData})
-
+## [경도 위도 데이터] : 일사량 데이터에 붙어 있는
+rawData_latlon_file_path = "C:/Users/DESKTOP/Desktop/allData/KMA/appendix/KMAP_latlon.nc"
+rawData_latlon = xr.open_dataset(rawData_latlon_file_path).to_dataframe().reset_index()
 
 
 
 ########## Merge irrData and latlonData ##########
 # 데이터프레임을 병합 (좌우 순서 유지)
-merged_df = pd.concat([df_latlon, final_df], axis=1)
+merged_df = pd.concat([rawData_irr, rawData_latlon], axis=1)
 
 # 결측값(NaN) 제거
 merged_df_clean = merged_df.dropna()
 
+# 기간의 평균 (W/m2 -> Wh/m2/year)로 바꿔줘야 함.
 merged_df_clean = merged_df_clean.copy()  # 명확한 복사본 생성
-
 merged_df_clean['Total'] = merged_df_clean['SWDN_flat_with_shading'] * 8760
 
-# # 각 월의 총 시간 계산 (윤년 고려 X, 일반적인 경우)
-# hours_per_month = [24 * 31, 24 * 28, 24 * 31, 24 * 30, 24 * 31, 24 * 30, 
-#                    24 * 31, 24 * 31, 24 * 30, 24 * 31, 24 * 30, 24 * 31]
-
-# # 기존 value_1 ~ value_12 열 이름 리스트
-# month_cols = [f'value_{i}' for i in range(1, 13)]
-
-# # 새로운 열 추가: monthTotalvalue_1 ~ monthTotalvalue_12
-# for i, col in enumerate(month_cols):
-#     new_col_name = f'monthTotal{col}'
-#     merged_df_clean[new_col_name] = merged_df_clean[col] * hours_per_month[i]
-
-# # monthTotalvalue_1 ~ monthTotalvalue_12의 합을 구하는 새로운 칼럼 추가
-# total_cols = [f'monthTotal{col}' for col in month_cols]
-# merged_df_clean['monthYearTotal'] = merged_df_clean[total_cols].sum(axis=1)
-
-df_selected = merged_df_clean[['latitude', 'longitude', 'Total']]
+# 필요한 칼럼만 추출.
+merged_df_clean = merged_df_clean[['latitude', 'longitude', 'Total']]
 
 
 
 ########## Shp file SGG  ##########
 # SHP 파일 로드
-#shp_file = "C:/Users/sidus/Desktop/GRI Github/pythonTest/test_1/ctprvn_20230729/ctprvn.shp"  # 실제 파일 경로로 변경하세요
 shp_file = "./ctprvn_20230729/ctprvn.shp"  # 실제 파일 경로로 변경하세요
 gdf_shp = gpd.read_file(shp_file)
 
