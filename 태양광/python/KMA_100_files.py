@@ -5,6 +5,7 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 from shapely.geometry import Point
 import netCDF4
+import fiona
 
 ## [일사량 데이터]
 # NetCDF 파일들이 저장된 폴더 경로 # 100m 격자의 일사량 데이터터
@@ -36,8 +37,9 @@ merged_df_clean = merged_df_clean[['latitude', 'longitude', 'Total']]
 
 ########## Shp file SGG  ##########
 # SHP 파일 로드
-shp_file = "./ctprvn_20230729/ctprvn.shp"  # 실제 파일 경로로 변경하세요
-gdf_shp = gpd.read_file(shp_file)
+shp_file = "C:/Users/DESKTOP/Desktop/solarAnalysis\data/ctprvn_20230729/ctprvn.shp"  # 실제 파일 경로로 변경하세요
+#gdf_shp = gpd.read_file(shp_file)
+gdf_shp = gpd.read_file(shp_file, encoding='euc-kr', engine='fiona')
 
 # 좌표계를 EPSG:5179로 수동 설정
 gdf_shp.set_crs("EPSG:5179", inplace=True)  # 또는 "EPSG:5181" 가능성 있음
@@ -53,7 +55,7 @@ print(gdf_shp.head())
 gdf_shp.plot(edgecolor="black", figsize=(8, 8))
 plt.show()
 
-df = df_selected
+df = merged_df_clean
 
 # GeoDataFrame 변환
 geometry = [Point(xy) for xy in zip(df["longitude"], df["latitude"])]
